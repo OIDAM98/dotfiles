@@ -26,3 +26,21 @@ function Manager:render(area)
 		Preview:render(chunks[3]:padding(ui.Padding.xy(1))),
  	}
  end
+
+function Header:host()
+	if ya.target_family() ~= "unix" then
+		return ui.Line {}
+	end
+	return ui.Span(ya.user_name() .. "@" .. ya.host_name() .. ":"):fg("blue")
+end
+
+function Header:render(area)
+	local chunks = self:layout(area)
+
+	local left = ui.Line { self:host(), self:cwd() }
+	local right = ui.Line { self:tabs() }
+	return {
+		ui.Paragraph(chunks[1], { left }),
+		ui.Paragraph(chunks[2], { right }):align(ui.Paragraph.RIGHT),
+	}
+end
