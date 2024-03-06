@@ -1,0 +1,31 @@
+
+[[manager.prepend_keymap]]
+on   = [ "s", "h" ]
+exec = 'shell "$SHELL" --block --confirm'
+desc = "Open shell here"
+
+[[manager.prepend_keymap]]
+on   = [ "s", "f" ]
+exec = 'search fd'
+desc = "Search files by name using fd"
+
+[[manager.prepend_keymap]]
+on   = [ "s", "r" ]
+exec = 'search rg'
+desc = "Search fies by content using ripgrep"
+
+[[manager.prepend_keymap]]
+on   = [ "q", "r" ]
+exec = 'shell "qmv -f do" --block'
+desc = "Interactive rename inside folder"
+
+# Small remaps to make q r combo work
+[[manager.prepend_keymap]]
+on = [ "q", "d" ]
+exec = "quit"
+desc = "Exit and CMD here" 
+
+[[manager.prepend_keymap]]
+on = [ "q", "q" ]
+exec = "quit --no-cwd-file"
+desc = "Exit without CMD here"

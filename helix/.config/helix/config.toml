@@ -1,0 +1,47 @@
+theme = "catppuccin_frappe"
+
+[editor]
+line-number = "relative"
+color-modes = true
+
+[editor.statusline]
+left = ["mode", "spinner", "register"]
+center = ["file-name", "read-only-indicator", "total-line-numbers"]
+right = ["version-control", "diagnostics", "selections", "position", "file-encoding"]
+separator = "|"
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+
+[editor.cursor-shape]
+insert = "bar"
+normal = "block"
+select = "underline"
+
+[editor.file-picker]
+hidden = true
+
+[editor.whitespace]
+render = "all"
+
+[editor.whitespace.characters]
+space = "·"
+nbsp = "⍽"
+tab = "→"
+newline = "⏎"
+tabpad = "·" # Tabs will look like "→···" (depending on tab width)
+
+[editor.indent-guides]
+render = true
+
+[keys.normal]
+C-s = ":w" # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
+C-o = ":open ~/.config/helix/config.toml" # Maps Ctrl-o to opening of the helix config file
+"C-S-esc" = "extend_line" # Maps Ctrl-Shift-Escape to extend_line
+"ret" = ["open_below", "normal_mode"] # Maps the enter key to open_below then re-enter normal mode
+
+# # create a new minor mode bound to `+`
+# [keys.normal."+"]
+# m = ":run-shell-command make"
+# c = ":run-shell-command cargo build"
+# t = ":run-shell-command cargo test"
