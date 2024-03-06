@@ -3,6 +3,10 @@
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="hx"
 export ZELLIJ_AUTO_ATTACH=true
+export LC_ALL="en_US.UTF-8"
+export LANGUAGE="en_US.UTF-8"
+
+### OS Default ###
 if [ -z "$XDG_CONFIG_HOME" ] ; then
     export XDG_CONFIG_HOME="$HOME/.config"
 fi
@@ -13,7 +17,7 @@ if [ -z "$XDG_CACHE_HOME" ] ; then
     export XDG_CACHE_HOME="$HOME/.cache"
 fi
 
-### ADDING TO PATH ###
+### PATH ###
 if [ -d "/usr/local/bin" ] ;
     then PATH="/usr/local/bin:$PATH"
 fi
@@ -32,17 +36,6 @@ fi
 
 # ZSH_THEME="steeef"
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
-
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
 plugins=(
 	git
 	zsh-autosuggestions
