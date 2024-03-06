@@ -1,0 +1,9 @@
+[display]
+compact = false
+use_pager = false
+
+[style.example_variables]
+underline = true
+
+[updates]
+auto_update = true
