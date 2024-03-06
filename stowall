@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# set -e
+set -e
 
 DOTFILES="${HOME}"/dotfiles
-
-shopt -s dotglob
 
 for folder in "${DOTFILES}"/*; do
   if [ -d ${folder} ] && [ "$(basename "${folder}")" != "." ] && [ "$(basename "${folder}")" != ".." ] && [ "$(basename "${folder}")" != ".git" ] ; then
@@ -13,12 +11,3 @@ for folder in "${DOTFILES}"/*; do
     echo "Directory $(basename $folder) stowed."
   fi
 done
-
-# for file in "${DOTFILES}"/.*; do
-#   if [ -f ${file} ] && [ "$(basename "${file}")" != "." ] && [ "$(basename "${file}")" != ".." ]; then
-#     filename=$(basename $file)
-#     echo "==== ${filename} ===="
-#     stow  -d "${DOTFILES}" --adopt --verbose=1 "${filename#.}"
-#     echo "File ${filename} stowed."
-#   fi
-# done
