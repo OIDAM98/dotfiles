@@ -5,6 +5,25 @@ export EDITOR="hx"
 export ZELLIJ_AUTO_ATTACH=true
 export LC_ALL="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
+export TERM="xterm-256color"
+export NVM_DIR="$HOME/.nvm"
+
+zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
+
+[[ -f ${zsh_plugins}.txt ]] || touch ${zsh_plugins}.txt
+
+fpath=(~/.antidote/functions $fpath)
+
+autoload -Uz antidote
+
+# Generate a new static file whenever .zsh_plugins.txt is updated.
+if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
+  antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
+fi
+
+# Source your static plugins file.
+source ${zsh_plugins}.zsh
+
 
 ### OS Default ###
 if [ -z "$XDG_CONFIG_HOME" ] ; then
@@ -22,6 +41,10 @@ if [ -d "/usr/local/bin" ] ;
     then PATH="/usr/local/bin:$PATH"
 fi
 
+if [ -d "$HOME/.emacs.d/bin" ] ;
+    then PATH="$HOME/.emacs.d/bin:$PATH"
+fi
+
 if [ -d  "$HOME/.local/bin" ] ; 
     then PATH="$HOME/.local/bin:$PATH"
 fi
@@ -36,13 +59,17 @@ fi
 
 # ZSH_THEME="steeef"
 
-plugins=(
-	git
-	zsh-autosuggestions
-	zsh-syntax-highlighting
-)
+# plugins=(
+# 	git
+# 	zsh-autosuggestions
+# 	zsh-syntax-highlighting
+# )
 
-source $ZSH/oh-my-zsh.sh
+# source $ZSH/oh-my-zsh.sh
+
+source ~/.antidote/antidote.zsh
+
+antidote load
 
 # User configuration
 
@@ -92,7 +119,7 @@ function ya() {
 
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 
-alias zshreload="_omz::reload"
+alias zshreload="source ~/.zshrc"
 alias ls="exa -l --color=always --group-directories-first"
 alias l="exa -l --color=always --group-directories-first"
 alias la="exa -alh --color=always --group-directories-first"
@@ -101,6 +128,7 @@ alias tree='exa -aT --color=always --group-directories-first' # tree listing
 alias df="df -h"
 alias free="free -h"
 alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.State}}"'
+alias plugins="antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh"
 
 YAZI_TERM=""
 if [ -n "$YAZI_LEVEL" ]; then
@@ -227,6 +255,9 @@ fi
 #
 # To initialize zoxide, add this to your configuration (usually ~/.zshrc):
 #
+
+[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
+
 source "${HOME}"/.config/broot/launcher/bash/br
 eval "$(zellij setup --generate-auto-start zsh)"
 eval "$(zoxide init zsh)"
