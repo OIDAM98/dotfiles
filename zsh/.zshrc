@@ -129,6 +129,7 @@ alias df="df -h"
 alias free="free -h"
 alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.State}}"'
 alias plugins="antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh"
+alias lg="lazygit"
 
 YAZI_TERM=""
 if [ -n "$YAZI_LEVEL" ]; then
