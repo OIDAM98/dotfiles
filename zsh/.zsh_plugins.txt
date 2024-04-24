@@ -1,4 +1,13 @@
-zsh-users/zsh-syntax-highlighting
-zsh-users/zsh-autosuggestions
-zsh-users/zsh-history-substring-search
+# utility plugins
+romkatv/zsh-defer
+romkatv/zsh-bench kind:path
 bossjones/boss-git-zsh-plugin
+
+# completion plugins
+zsh-users/zsh-completions
+mattmc3/zephyr path:plugins/completion
+
+# deferred plugins
+zsh-users/zsh-autosuggestions kind:defer
+zdharma-continuum/fast-syntax-highlighting kind:defer
+zsh-users/zsh-history-substring-search kind:defer
