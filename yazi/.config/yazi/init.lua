@@ -35,12 +35,12 @@ function Header:host()
 end
 
 function Header:render(area)
-	local chunks = self:layout(area)
+	self.area = area
 
-	local left = ui.Line { self:host(), self:cwd() }
-	local right = ui.Line { self:tabs() }
+	local right = ui.Line { self:count(), self:tabs() }
+	local left = ui.Line { self:host(), self:cwd(math.max(0, area.w - right.width())) }
 	return {
-		ui.Paragraph(chunks[1], { left }),
-		ui.Paragraph(chunks[2], { right }):align(ui.Paragraph.RIGHT),
+		ui.Paragraph(area, { left }),
+		ui.Paragraph(area, { right }):align(ui.Paragraph.RIGHT),
 	}
 end
