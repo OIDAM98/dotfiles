@@ -23,3 +23,6 @@
 
 [diff]
 	colorMoved = default
+
+[includeIf "gitdir:~/Documents/FEMSA/"]
+	path = ~/Documents/FEMSA/.gitconfig-work

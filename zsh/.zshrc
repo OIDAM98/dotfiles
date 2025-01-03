@@ -109,11 +109,11 @@ fi
 
 IFS=$SAVEIFS
 
-function ya() {
-	local tmp="$(mktemp -t "yazi-cwd.XXXXX")"
+function y() {
+	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
-	if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-		z "$cwd"
+	if cwd="$(command cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
+		builtin cd -- "$cwd"
 	fi
 	rm -f -- "$tmp"
 }
@@ -121,16 +121,17 @@ function ya() {
 # Set personal aliases, overriding those provided by oh-my-zsh libs,
 
 alias zshreload="source ~/.zshrc"
-alias ls="exa -l --color=always --group-directories-first"
-alias l="exa -l --color=always --group-directories-first"
-alias la="exa -alh --color=always --group-directories-first"
-alias ll='exa -l --color=always --group-directories-first'  # long format
-alias tree='exa -aT --color=always --group-directories-first' # tree listing
+alias ls="eza -l --color=always --group-directories-first"
+alias l="eza -l --color=always --group-directories-first"
+alias la="eza -alh --color=always --group-directories-first"
+alias ll='eza -l --color=always --group-directories-first'  # long format
+alias tree='eza -aT --color=always --group-directories-first' # tree listing
 alias df="df -h"
 alias free="free -h"
 alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.State}}"'
 alias plugins="antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh"
 alias lg="lazygit"
+alias ..="cd .."
 
 YAZI_TERM=""
 if [ -n "$YAZI_LEVEL" ]; then
@@ -261,6 +262,6 @@ fi
 [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
 
 source "${HOME}"/.config/broot/launcher/bash/br
-eval "$(zellij setup --generate-auto-start zsh)"
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
+eval "$(zellij setup --generate-auto-start zsh)"

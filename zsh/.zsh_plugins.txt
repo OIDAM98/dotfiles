@@ -1,3 +1,5 @@
+mattmc3/zephyr path:plugins/completion
+
 # utility plugins
 romkatv/zsh-defer
 romkatv/zsh-bench kind:path
@@ -5,9 +7,19 @@ bossjones/boss-git-zsh-plugin
 
 # completion plugins
 zsh-users/zsh-completions
-mattmc3/zephyr path:plugins/completion
+
+mattmc3/zman
+
+# zsh-utils
+belak/zsh-utils path:history
+belak/zsh-utils path:utility
+belak/zsh-utils path:editor
+belak/zsh-utils path:completion
 
 # deferred plugins
 zsh-users/zsh-autosuggestions kind:defer
 zdharma-continuum/fast-syntax-highlighting kind:defer
 zsh-users/zsh-history-substring-search kind:defer
+
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-history-substring-search

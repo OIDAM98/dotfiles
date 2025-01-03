@@ -16,7 +16,7 @@ desc = "Search fies by content using ripgrep"
 
 [[manager.prepend_keymap]]
 on   = [ "q", "r" ]
-run = 'shell "qmv -f do" --block'
+run = 'shell --interactive "qmv -f do" --block'
 desc = "Interactive rename inside folder"
 
 # Small remaps to make q r combo work

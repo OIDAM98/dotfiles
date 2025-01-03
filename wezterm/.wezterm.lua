@@ -22,4 +22,8 @@ end
 
 config.color_scheme = scheme_for_appearance(get_appearance())
 
+config.window_decorations = "RESIZE"
+config.window_background_opacity = 0.85
+config.macos_window_background_blur = 8
+
 return config
