@@ -1,10 +1,37 @@
-[manager]
+[mgr]
 show_hidden = true
 sort_dir_first = true
+ratio = [1,2,5]
 
 [plugin]
 prepend_previewers = [
-    { mime = "text/csv", run = "miller"},
+	# Archive previewer
+	{ mime = "application/*zip",            run = "ouch" },
+	{ mime = "application/x-tar",           run = "ouch" },
+	{ mime = "application/x-bzip2",         run = "ouch" },
+	{ mime = "application/x-7z-compressed", run = "ouch" },
+	{ mime = "application/x-rar",           run = "ouch" },
+  { mime = "application/x-xz",            run = "ouch" },
+	{ mime = "application/xz",              run = "ouch" },
+	# DuckDB Previewer
+  { name = "*.csv", run = "duckdb" },  
+  { name = "*.tsv", run = "duckdb" },  
+  { name = "*.json", run = "duckdb" },  
+  { name = "*.parquet", run = "duckdb" },  
+  { name = "*.txt", run = "duckdb" },  
+  { name = "*.xlsx", run = "duckdb" },  
+  { name = "*.db", run = "duckdb" },
+  { name = "*.duckdb", run = "duckdb" },
+	# Markdown
+  { name = "*.md", run = "glow" },
+]
+prepend_preloaders = [  
+  { name = "*.csv", run = "duckdb", multi = false },  
+  { name = "*.tsv", run = "duckdb", multi = false },  
+  { name = "*.json", run = "duckdb", multi = false },  
+  { name = "*.parquet", run = "duckdb", multi = false },
+  { name = "*.txt", run = "duckdb", multi = false },  
+  { name = "*.xlsx", run = "duckdb", multi = false }
 ]
 
 [[plugin.prepend_fetchers]]
@@ -17,3 +44,8 @@ id   = "git"
 name = "*/"
 run  = "git"
 
+[opener]
+extract = [
+	{ run = 'ouch d -y "%*"', desc = "Extract here with ouch", for = "windows" },
+	{ run = 'ouch d -y "$@"', desc = "Extract here with ouch", for = "unix" },
+]

@@ -1,31 +1,62 @@
-
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "s", "h" ]
 run = 'shell "$SHELL" --block --confirm'
 desc = "Open shell here"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "s", "f" ]
 run = 'search fd'
 desc = "Search files by name using fd"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "s", "r" ]
 run = 'search rg'
 desc = "Search fies by content using ripgrep"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on   = [ "q", "r" ]
 run = 'shell --interactive "qmv -f do" --block'
 desc = "Interactive rename inside folder"
 
 # Small remaps to make q r combo work
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = [ "q", "d" ]
 run = "quit"
 desc = "Exit and CMD here" 
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = [ "q", "q" ]
 run = "quit --no-cwd-file"
 desc = "Exit without CMD here"
+
+# LazyGit plugin
+[[mgr.prepend_keymap]]
+on = ["C"]
+run = "plugin ouch"
+desc = "Compress with ouch"
+
+[[mgr.prepend_keymap]]
+on   = [ "g", "i" ]
+run  = "plugin lazygit"
+desc = "run lazygit"
+
+# DuckDB plugin
+[[mgr.prepend_keymap]]
+on = "H"
+run = "plugin duckdb -1"
+desc = "Scroll one column to the left"
+
+[[mgr.prepend_keymap]]
+on = "L"
+run = "plugin duckdb +1"
+desc = "Scroll one column to the right"
+
+[[mgr.prepend_keymap]]
+on = ["g", "o"]
+run = "plugin duckdb -open"
+desc = "open with duckdb"
+
+[[mgr.prepend_keymap]]
+on = ["g", "u"]
+run = "plugin duckdb -ui"
+desc = "open with duckdb ui"

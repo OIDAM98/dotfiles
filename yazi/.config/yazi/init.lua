@@ -4,3 +4,7 @@ require("full-border"):setup {
 }
 
 require("git"):setup()
+require("duckdb"):setup({
+	mode = "standard",
+	cache_size = 1000
+})
