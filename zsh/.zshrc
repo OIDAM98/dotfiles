@@ -317,3 +317,7 @@ fi
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 eval "$(zellij setup --generate-auto-start zsh)"
+eval "FZF_ALT_C_COMMAND= source <(fzf --zsh)"
+if command -v brew >/dev/null 2>&1; then
+  eval "$( "$(command -v brew)" shellenv)"
+fi
