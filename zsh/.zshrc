@@ -1,5 +1,3 @@
-# If you come from bash you might have to change your $PATH.
-
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="hx"
 export SUDO_EDITOR=$(which hx)
@@ -33,7 +31,6 @@ fi
 # Source your static plugins file.
 source ${zsh_plugins}.zsh
 
-
 ### OS Default ###
 if [ -z "$XDG_CONFIG_HOME" ] ; then
     export XDG_CONFIG_HOME="$HOME/.config"
@@ -66,56 +63,11 @@ if [ -d  "$HOME/.cargo/bin" ] ;
     then PATH="$HOME/.cargo/bin:$PATH"
 fi
 
-# ZSH_THEME="steeef"
-
-# plugins=(
-# 	git
-# 	zsh-autosuggestions
-# 	zsh-syntax-highlighting
-# )
-
-# source $ZSH/oh-my-zsh.sh
-
 source ~/.antidote/antidote.zsh
 
 antidote load
 
 # User configuration
-
-# FROM DISTROTUBE
-### Function extract for common file formats ###
-SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
-
-function extract {
- if [ -z "$1" ]; then
-    # display usage if no parameters given
-    echo "Usage: extract <path/file_name>.<zip|rar|bz2|gz|tar|tbz2|tgz|Z|7z|xz|ex|tar.bz2|tar.gz|tar.xz>"
-    echo "       extract <path/file_name_1.ext> [path/file_name_2.ext] [path/file_name_3.ext]"
- else
-    for n in "$@"
-    do
-      if [ -f "$n" ] ; then
-          case "${n%,}" in
-            *.cbt|*.tar.bz2|*.tar.gz|*.tar.xz|*.tbz2|*.tgz|*.txz|*.tar)
-                         tar xvf "$n"       ;;
-            *.cbz|*.epub|*.zip)       unzip ./"$n"       ;;
-            *.7z|*.arj|*.cab|*.cb7|*.chm|*.deb|*.dmg|*.iso|*.lzh|*.msi|*.pkg|*.rpm|*.udf|*.wim|*.xar)
-                         7z x ./"$n"        ;;
-            *)
-                         echo "extract: '$n' - unknown archive method"
-                         return 1
-                         ;;
-          esac
-      else
-          echo "'$n' - file does not exist"
-          return 1
-      fi
-    done
-fi
-}
-
-IFS=$SAVEIFS
 
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
