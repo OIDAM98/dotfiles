@@ -2,6 +2,7 @@
 
 export ZSH="$HOME/.oh-my-zsh"
 export EDITOR="hx"
+export SUDO_EDITOR=$(which hx)
 export ZELLIJ_AUTO_ATTACH=true
 export LC_ALL="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
