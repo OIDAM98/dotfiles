@@ -18,6 +18,11 @@ zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
 
 fpath=(~/.antidote/functions $fpath)
 
+# Add Homebrew completion directory to fpath if Homebrew is installed
+if command -v brew >/dev/null 2>&1; then
+  fpath+=( "$(brew --prefix)/share/zsh/site-functions" )
+fi
+
 autoload -Uz antidote
 
 # Generate a new static file whenever .zsh_plugins.txt is updated.
@@ -135,6 +140,28 @@ alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Stat
 alias plugins="antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh"
 alias lg="lazygit"
 alias ..="cd .."
+
+# Check if the current terminal is Kitty
+if [ -n "$KITTY_WINDOW_ID" ]; then
+  # Define a shell function named 'ssh' that overrides the default command
+    export TERM="xterm-kitty"
+fi
+
+# 
+# Check if the current terminal is Kitty
+if [ -n "$KITTY_WINDOW_ID" ]; then
+  # Define a shell function named 'ssh' that overrides the default command
+  ssh() {
+    # Check if 'kitty' is available in the PATH
+    if command -v kitty >/dev/null 2>&1; then
+      # Use the 'command' built-in to run the 'kitty' executable found in the PATH.
+      command kitty +kitten ssh "$@"
+    else
+      # Fallback to the system's default ssh command if kitty is not found
+      command ssh "$@"
+    fi
+  }
+fi
 
 YAZI_TERM=""
 if [ -n "$YAZI_LEVEL" ]; then
