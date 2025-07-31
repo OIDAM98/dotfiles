@@ -8,6 +8,7 @@ export LANGUAGE="en_US.UTF-8"
 export TERM="xterm-256color"
 export NVM_DIR="$HOME/.nvm"
 export GOPATH=$HOME/go
+export XDG_CONFIG_HOME="$HOME/.config"
 export BR_INSTALL="no"
 
 zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
