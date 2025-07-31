@@ -1,4 +1,4 @@
-theme = "catppuccin_frappe"
+theme = "bogster"
 
 [editor]
 line-number = "relative"
@@ -38,6 +38,7 @@ render = true
 
 [keys.normal]
 esc = ["collapse_selection", "keep_primary_selection"]
+g = { a = "code_action" } # Maps `ga` to show possible code actions
 C-s = ":w" # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
 C-o = ":open ~/.config/helix/config.toml" # Maps Ctrl-o to opening of the helix config file
 "C-S-esc" = "extend_line" # Maps Ctrl-Shift-Escape to extend_line
