@@ -16,10 +16,6 @@ zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
 
 fpath=(~/.antidote/functions $fpath)
 
-# Add Homebrew completion directory to fpath if Homebrew is installed
-if command -v brew >/dev/null 2>&1; then
-  fpath+=( "$(brew --prefix)/share/zsh/site-functions" )
-fi
 
 autoload -Uz antidote
 
@@ -293,6 +289,11 @@ fi
 # If we found a valid path to brew, run 'shellenv' to set up the environment.
 if [ -n "$BREW_PATH" ]; then
   eval "$($BREW_PATH shellenv)"
+fi
+
+# Add Homebrew completion directory to fpath if Homebrew is installed
+if [ -n "$BREW_PATH" ]; then
+  fpath+="$BREW_PATH/share/zsh/site-functions"
 fi
 
 # This sets the FZF_ALT_C_COMMAND variable to an empty string,
