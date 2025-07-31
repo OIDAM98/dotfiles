@@ -317,7 +317,36 @@ fi
 eval "$(zoxide init zsh)"
 eval "$(starship init zsh)"
 eval "$(zellij setup --generate-auto-start zsh)"
-eval "FZF_ALT_C_COMMAND= source <(fzf --zsh)"
-if command -v brew >/dev/null 2>&1; then
-  eval "$( "$(command -v brew)" shellenv)"
+# This block sets up the Homebrew environment dynamically.
+# It checks for the OS and then attempts to find the correct path to 'brew'.
+
+# Determine the operating system.
+OS_NAME="$(uname -s)"
+
+# Set the potential Homebrew path based on the OS.
+if [ "$OS_NAME" = "Darwin" ]; then
+  # For macOS, check both possible Homebrew installation paths.
+  if [ -f "/opt/homebrew/bin/brew" ]; then
+    BREW_PATH="/opt/homebrew/bin/brew"
+  elif [ -f "/usr/local/bin/brew" ]; then
+    BREW_PATH="/usr/local/bin/brew"
+  fi
+elif [ "$OS_NAME" = "Linux" ]; then
+  # For Linux, check the standard Linuxbrew installation path.
+  if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
+    BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
+  fi
 fi
+
+# If we found a valid path to brew, run 'shellenv' to set up the environment.
+if [ -n "$BREW_PATH" ]; then
+  eval "$($BREW_PATH shellenv)"
+fi
+
+# This sets the FZF_ALT_C_COMMAND variable to an empty string,
+# which disables the Alt-C key binding for fuzzy-finding directories.
+export FZF_ALT_C_COMMAND=""
+
+# This sources the fzf script and sets up all the key bindings and
+# completion functions in your Zsh shell.
+source <(fzf --zsh)
