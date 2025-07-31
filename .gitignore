@@ -1,1 +1,3 @@
 rclone.conf
+yazi/.config/yazi/plugins/
+!yazi/.config/yazi/plugins/.gikeep
