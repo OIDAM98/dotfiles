@@ -3,11 +3,80 @@
 set -e
 
 DOTFILES="${HOME}"/dotfiles
+TARGET_HOME="${HOME}"
 
-for folder in "${DOTFILES}"/*; do
-  if [ -d ${folder} ] && [ "$(basename "${folder}")" != "." ] && [ "$(basename "${folder}")" != ".." ] && [ "$(basename "${folder}")" != ".git" ] ; then
-    echo "==== $(basename $folder) ===="
-    stow -d "${DOTFILES}" -t "${HOME}" --adopt --restow  --no-folding  --verbose=1 $(basename $folder) 
-    echo "Directory $(basename $folder) stowed."
+echo "Starting Stow process for dotfiles packages, intelligently handling existing targets and adoptions..."
+echo "---"
+
+# Ensure the target ~/.config directory exists. Stow will create subdirectories
+# like ~/.config/nvim, but it won't create ~/.config itself if it's missing.
+mkdir -p "${TARGET_HOME}/.config"
+
+# Iterate through each top-level package folder in your dotfiles directory
+for package_path in "${DOTFILES}"/*; do
+  package_name="$(basename "${package_path}")"
+
+  # Skip if not a directory, or if it's special Git/Stow internal folders
+  if ! [ -d "${package_path}" ] || \
+     [ "${package_name}" == "." ] || \
+     [ "${package_name}" == ".." ] || \
+     [ "${package_name}" == ".git" ] || \
+     [[ "${package_name}" == ".stow-global-ignore" ]]; then # Ensure we don't treat this as a package
+    continue
   fi
+
+  echo "== Processing package: ${package_name} =="
+
+  # Determine the primary target location this package intends to create/manage.
+  # This is the most likely place Stow would create a symlink, or where an existing
+  # installation would reside.
+  PRIMARY_TARGET_LOCATION=""
+
+  # Case 1: Package contains a .config/ subfolder. This usually means it's a ~/.config/<package_name> setup.
+  if [ -d "${package_path}/.config" ]; then
+    # Assume the config's top-level folder under ~/.config matches the package name.
+    # e.g., ~/dotfiles/nvim/.config/nvim -> ~/.config/nvim
+    PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.config/${package_name}"
+  # Case 2: Package does NOT contain a .config/ subfolder, so it's likely a top-level dotfile/dir.
+  # We look for a file/directory that would be its most prominent target in HOME.
+  else
+    # First, check for a dotfile matching the package name (e.g., zsh -> ~/.zsh)
+    if [ -e "${package_path}/.${package_name}" ] || [ -d "${package_path}/.${package_name}" ]; then
+      PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.${package_name}"
+    # If not, check for a non-dotfile matching the package name (e.g., bin -> ~/bin)
+    elif [ -e "${package_path}/${package_name}" ] || [ -d "${package_path}/${package_name}" ]; then
+      PRIMARY_TARGET_LOCATION="${TARGET_HOME}/${package_name}"
+    # If still not found, check for very common top-level dotfiles that are often in a package.
+    # This covers packages like 'bash' containing '.bashrc', 'git' containing '.gitconfig'.
+    # This is a heuristic and can be expanded.
+    elif [ -e "${package_path}/.bashrc" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.bashrc"
+    elif [ -e "${package_path}/.zshrc" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.zshrc"
+    elif [ -e "${package_path}/.profile" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.profile"
+    elif [ -e "${package_path}/.gitconfig" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.gitconfig"
+    elif [ -e "${package_path}/.ssh" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.ssh" # Common for SSH configs
+    elif [ -e "${package_path}/.gnupg" ]; then PRIMARY_TARGET_LOCATION="${TARGET_HOME}/.gnupg" # Common for GPG configs
+    fi
+  fi
+
+  # Check if a primary target location was determined
+  if [ -z "${PRIMARY_TARGET_LOCATION}" ]; then
+    echo "  - Could not determine a primary target for package '${package_name}' based on common patterns. Skipping."
+    continue
+  fi
+
+  # Now, check if this primary target directory/file/symlink already exists
+  if [ -e "${PRIMARY_TARGET_LOCATION}" ] || [ -L "${PRIMARY_TARGET_LOCATION}" ]; then
+    echo "  - Primary target found: ${PRIMARY_TARGET_LOCATION}"
+
+    # Perform the stow operation with --adopt and --restow
+    echo "Stowing package: ${package_name}..."
+    stow -d "${DOTFILES}" -t "${TARGET_HOME}" --adopt --restow --no-folding --verbose=1 "${package_name}"
+    echo "Package '${package_name}' processed successfully."
+  else
+    echo "  - Skipping package '${package_name}': Primary target '${PRIMARY_TARGET_LOCATION}' does not exist (program not installed or set up yet)."
+  fi
+  echo "---"
+
 done
+
+echo "Stowing process complete."
