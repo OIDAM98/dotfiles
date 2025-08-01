@@ -1,3 +1,5 @@
 rclone.conf
-yazi/.config/yazi/plugins/
+yazi/.config/yazi/plugins/*
+yazi/.config/yazi/flavors/*
 !yazi/.config/yazi/plugins/.gikeep
+!yazi/.config/yazi/flavors/.gikeep

@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+
+set -e # Exit immediately if a command exits with a non-zero status
+
+DOTFILES="${HOME}/dotfiles"
+TARGET_CONFIG="${HOME}/.config"
+CONFIG_IGNORE_FILE="${DOTFILES}/.config_ignore"
+
+echo "--- Starting new dotfiles adoption script ---"
+echo "---"
+
+# Ensure the target ~/.config directory exists.
+mkdir -p "${TARGET_CONFIG}"
+
+# Function to check a directory for any symlinks (absolute or relative)
+check_for_any_symlinks() {
+  local dir_path="$1"
+  find "${dir_path}" -type l -print -quit | grep -q .
+}
+
+# =======================
+#   Intra-Package Adoption Phase
+# =======================
+echo "1. Intra-Package Adoption: Moving new files into existing packages..."
+for package_path in "${DOTFILES}"/*; do
+  package_name="$(basename "${package_path}")"
+  if ! [ -d "${package_path}" ] || [ "${package_name}" = "." ] || [ "${package_name}" = ".." ] || [ "${package_name}" = ".git" ]; then
+    continue
+  fi
+
+  if [ -d "${package_path}/.config" ]; then
+    target_dir="${TARGET_CONFIG}/${package_name}"
+    source_dir="${package_path}/.config/${package_name}"
+  else
+    target_dir="${TARGET_HOME}"
+    source_dir="${package_path}"
+  fi
+  
+  if [ ! -d "${target_dir}" ]; then continue; fi
+
+  find "${target_dir}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS= read -r -d $'\0' item_path; do
+    item_name="$(basename "${item_path}")"
+    if [ ! -d "${source_dir}" ]; then continue; fi
+
+    if [ -d "${item_path}" ] && check_for_any_symlinks "${item_path}"; then
+        echo "[${package_name}] Skipping '${item_name}': It is a directory containing symlinks."
+        continue
+    fi
+    
+    echo "  - Found new item: '${item_name}' in '${target_dir}'"
+    echo "    - Moving '${item_path}' to '${source_dir}/'"
+    mv "${item_path}" "${source_dir}/"
+    
+  done
+done
+echo "Intra-package adoption complete."
+echo "---"
+
+# =======================
+#   New Package Adoption Phase
+# =======================
+echo "2. New Package Adoption: Creating new packages for unmanaged items..."
+IGNORE_PATTERNS_FILE=$(mktemp)
+trap "rm -f ${IGNORE_PATTERNS_FILE}" EXIT # Clean up the temp file on exit
+
+if [ -f "${CONFIG_IGNORE_FILE}" ]; then
+  grep -v '^\s*#' "${CONFIG_IGNORE_FILE}" | grep -v '^\s*$' > "${IGNORE_PATTERNS_FILE}"
+fi
+
+find "${TARGET_CONFIG}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS= read -r -d $'\0' item_path; do
+    item_name="$(basename "${item_path}")"
+    package_path="${DOTFILES}/${item_name}"
+    
+    # Check against the ignore file using grep
+    if [ -s "${IGNORE_PATTERNS_FILE}" ] && grep -q -x -F -f "${IGNORE_PATTERNS_FILE}" <<< "$item_name"; then
+        echo "Skipping package '${item_name}': Found in ignore file."
+        continue
+    fi
+    
+    if [ -d "${package_path}" ]; then
+        echo "Skipping package '${item_name}': A corresponding package already exists."
+        continue
+    fi
+    
+    if [ -L "${item_path}" ]; then
+        echo "Skipping package '${item_name}': It is a symlink (likely already managed)."
+        continue
+    fi
+
+    if [ -d "${item_path}" ] && check_for_any_symlinks "${item_path}"; then
+        echo "Skipping package '${item_name}': It is a directory containing symlinks."
+        continue
+    fi
+    
+    echo "== Adopting new package: ${item_name} =="
+    
+    echo "  - Creating new package directory: '${package_path}/.config/'"
+    mkdir -p "${package_path}/.config/"
+    echo "  - Moving unmanaged item '${item_path}' to '${package_path}/.config/'"
+    mv "${item_path}" "${package_path}/.config/"
+    
+    echo "Adoption complete for '${item_name}'."
+    echo "---"
+done
+
+echo "New package adoption complete."
+echo "---"
+
+echo "--- Script finished successfully! ---"
