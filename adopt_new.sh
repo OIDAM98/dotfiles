@@ -13,12 +13,14 @@ echo "---"
 mkdir -p "${TARGET_CONFIG}"
 
 # Function to check a directory for any symlinks (absolute or relative)
+# This uses a portable method to check for output from find
 check_for_any_symlinks() {
   local dir_path="$1"
-  find "${dir_path}" -type l -print -quit | grep -q .
+  find "${dir_path}" -type l | grep -q .
 }
 
 # Function to check a directory for any files (recursively)
+# This is a portable way to check for a non-empty directory.
 check_for_any_files() {
   local dir_path="$1"
   find "${dir_path}" -mindepth 1 | grep -q .
@@ -43,7 +45,7 @@ for package_path in "${DOTFILES}"/*; do
   
   if [ ! -d "${target_dir}" ]; then continue; fi
 
-  find "${target_dir}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS= read -r -d $'\0' item_path; do
+  find "${target_dir}" -mindepth 1 -maxdepth 1 -not -type l | while IFS= read -r item_path; do
     item_name="$(basename "${item_path}")"
     if [ ! -d "${source_dir}" ]; then continue; fi
 
@@ -82,11 +84,12 @@ if [ -f "${CONFIG_IGNORE_FILE}" ]; then
   grep -v '^\s*#' "${CONFIG_IGNORE_FILE}" | grep -v '^\s*$' > "${IGNORE_PATTERNS_FILE}"
 fi
 
-find "${TARGET_CONFIG}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS= read -r -d $'\0' item_path; do
+find "${TARGET_CONFIG}" -mindepth 1 -maxdepth 1 -not -type l | while IFS= read -r item_path; do
     item_name="$(basename "${item_path}")"
     package_path="${DOTFILES}/${item_name}"
     
-    if [ -s "${IGNORE_PATTERNS_FILE}" ] && grep -q -x -F -f "${IGNORE_PATTERNS_FILE}" <<< "$item_name"; then
+    # Check against the ignore file using grep
+    if [ -s "${IGNORE_PATTERNS_FILE}" ] && echo "$item_name" | grep -q -x -F -f "${IGNORE_PATTERNS_FILE}"; then
         echo "Skipping package '${item_name}': Found in ignore file."
         continue
     fi
