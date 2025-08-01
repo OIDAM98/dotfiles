@@ -18,6 +18,12 @@ check_for_any_symlinks() {
   find "${dir_path}" -type l -print -quit | grep -q .
 }
 
+# Function to check a directory for any files (recursively)
+check_for_any_files() {
+  local dir_path="$1"
+  find "${dir_path}" -mindepth 1 | grep -q .
+}
+
 # =======================
 #   Intra-Package Adoption Phase
 # =======================
@@ -30,7 +36,6 @@ for package_path in "${DOTFILES}"/*; do
     continue
   fi
 
-  # Only run this phase for .config packages
   if [ ! -d "${package_path}/.config" ]; then continue; fi
 
   target_dir="${TARGET_CONFIG}/${package_name}"
@@ -42,13 +47,11 @@ for package_path in "${DOTFILES}"/*; do
     item_name="$(basename "${item_path}")"
     if [ ! -d "${source_dir}" ]; then continue; fi
 
-    # Check for empty directories before moving
-    if [ -d "${item_path}" ] && [ "$(find "${item_path}" -type f -print -quit | wc -l)" -eq 0 ]; then
+    if [ -d "${item_path}" ] && ! check_for_any_files "${item_path}"; then
         echo "[${package_name}] Skipping empty directory '${item_name}'."
         continue
     fi
 
-    # Check for symlinks before moving
     if [ -d "${item_path}" ] && check_for_any_symlinks "${item_path}"; then
         echo "[${package_name}] Skipping '${item_name}': It is a directory containing symlinks."
         continue
@@ -83,7 +86,6 @@ find "${TARGET_CONFIG}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS
     item_name="$(basename "${item_path}")"
     package_path="${DOTFILES}/${item_name}"
     
-    # Check against the ignore file using grep
     if [ -s "${IGNORE_PATTERNS_FILE}" ] && grep -q -x -F -f "${IGNORE_PATTERNS_FILE}" <<< "$item_name"; then
         echo "Skipping package '${item_name}': Found in ignore file."
         continue
@@ -98,8 +100,12 @@ find "${TARGET_CONFIG}" -mindepth 1 -maxdepth 1 -not -type l -print0 | while IFS
         echo "Skipping package '${item_name}': It is a symlink (likely already managed)."
         continue
     fi
+    
+    if [ -d "${item_path}" ] && ! check_for_any_files "${item_path}"; then
+        echo "Skipping empty directory '${item_name}'."
+        continue
+    fi
 
-    # Check for symlinks within the new directory
     if [ -d "${item_path}" ] && check_for_any_symlinks "${item_path}"; then
         echo "Skipping package '${item_name}': Contains symlinks."
         continue
