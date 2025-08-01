@@ -1,6 +1,7 @@
 [mgr]
 show_hidden = true
 sort_dir_first = true
+sorty_by = "alphabetical"
 ratio = [1,2,5]
 
 [plugin]

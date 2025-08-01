@@ -33,6 +33,11 @@ use = "Lil-Dank/lazygit"
 rev = "7a08a09"
 hash = "a1fa2b3e1826c3a34804ea8c548e9f80"
 
+[[plugin.deps]]
+use = "yazi-rs/plugins:toggle-pane"
+rev = "de53d90"
+hash = "d6f60c24d8c0cf57a855bf46115b2502"
+
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
 rev = "d3fd3a5"

@@ -61,3 +61,15 @@ desc = "open with duckdb"
 on = ["g", "u"]
 run = "plugin duckdb -ui"
 desc = "open with duckdb ui"
+
+# keymap.toml
+[[mgr.prepend_keymap]]
+on   = "T"
+run  = "plugin toggle-pane min-preview"
+desc = "Show or hide the preview pane"
+
+# keymap.toml
+[[mgr.prepend_keymap]]
+on   = "T"
+run  = "plugin toggle-pane max-preview"
+desc = "Maximize or restore the preview pane"
