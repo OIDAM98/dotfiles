@@ -1,0 +1,45 @@
+# Configured to run alongside marksman.
+[[language]]
+language-servers = ["marksman", "mpls", "ltex-ls-plus"]
+comment-tokens = ["-", "+", "*", "- [ ]", ">"]
+soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+name = "markdown"
+formatter = { command = 'prettier', args = [
+  "--parser",
+  "markdown",
+  "--prose-wrap",
+  "never", # <always|never|preserve>
+] }
+auto-format = true
+
+[language-server.mpls]
+command = "mpls"
+args = ["--dark-mode", "--enable-emoji"]
+# An example args entry showing how to specify flags with values:
+# args = ["--port", "8080", "--browser", "google-chrome"]
+
+[[language]]
+name = "sql"
+indent = { tab-width = 2, unit = "  " }
+
+[[language]]
+name = "python"
+language-servers = ["pylsp", "ruff"]
+auto-format = false
+scope = "source.python"
+comment-token = "#"
+roots = [".", "pyproject.toml", "pyrightconfig.json"]
+formatter = { command = 'ruff', args = [
+  "format",
+  "-"
+] }
+
+# [[language-server.ruff]]
+# command = "ruff"
+# args = ["format", '-']
+
+[language-server.pylsp.config.pylsp.plugins]
+pylsp_mypy.enabled = true
+pylsp_mypy.live_mode = true
+rope_autoimport.enabled = true
