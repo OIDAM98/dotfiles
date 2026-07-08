@@ -63,6 +63,10 @@ if [ -d  "$HOME/go/bin" ] ;
     then PATH="$HOME/go/bin:$PATH"
 fi
 
+if [ -d  "$HOME/.lmstudio/bin" ] ; 
+    then PATH="$HOME/.lmstudio/bin:$PATH"
+fi
+
 source ~/.antidote/antidote.zsh
 
 antidote load
