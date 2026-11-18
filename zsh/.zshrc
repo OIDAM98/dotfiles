@@ -1,78 +1,67 @@
-export ZSH="$HOME/.oh-my-zsh"
+### ENV ###
 export EDITOR="hx"
-export SUDO_EDITOR=$(which hx)
+export SUDO_EDITOR="$(command -v hx)"
 export ZELLIJ_AUTO_ATTACH=true
 export LC_ALL="en_US.UTF-8"
 export LANGUAGE="en_US.UTF-8"
 export TERM="xterm-256color"
 export NVM_DIR="$HOME/.nvm"
-export GOPATH=$HOME/go
-export XDG_CONFIG_HOME="$HOME/.config"
+export GOPATH="$HOME/go"
+export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export BR_INSTALL="no"
+export FZF_ALT_C_COMMAND=""
+export SSL_CERT_FILE=/etc/ssl/cert.pem
+export REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
+export PYENV_ROOT="$HOME/.pyenv"
 
-zsh_plugins=${ZDOTDIR:-~}/.zsh_plugins
+### PATH (deduplicated; first entry wins) ###
+typeset -U path PATH fpath
+[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+path=(
+  $HOME/bin
+  $HOME/.local/bin
+  $HOME/.cargo/bin
+  $HOME/go/bin
+  $HOME/.lmstudio/bin
+  $HOME/.emacs.d/bin
+  $HOME/.codeium/windsurf/bin
+  $PYENV_ROOT/bin
+  $PYENV_ROOT/shims
+  /usr/local/bin
+  $path
+)
+path=(${^path}(N-/))   # drop entries that don't exist
+[[ -d /opt/homebrew/share/zsh/site-functions ]] && fpath+=(/opt/homebrew/share/zsh/site-functions)
+fpath=(~/.zsh/completions $fpath)
 
-[[ -f ${zsh_plugins}.txt ]] || touch ${zsh_plugins}.txt
-
-fpath=(~/.antidote/functions $fpath)
-
-
-autoload -Uz antidote
-
-# Generate a new static file whenever .zsh_plugins.txt is updated.
-if [[ ! ${zsh_plugins}.zsh -nt ${zsh_plugins}.txt ]]; then
-  antidote bundle <${zsh_plugins}.txt >|${zsh_plugins}.zsh
+### ZELLIJ auto-start ###
+# Runs first so the outer shell does no extra work; the shell inside zellij loads everything below.
+if [[ -o interactive ]] && command -v zellij >/dev/null; then
+  eval "$(zellij setup --generate-auto-start zsh)"
 fi
 
-# Source your static plugins file.
-source ${zsh_plugins}.zsh
-
-### OS Default ###
-if [ -z "$XDG_CONFIG_HOME" ] ; then
-    export XDG_CONFIG_HOME="$HOME/.config"
-fi
-if [ -z "$XDG_DATA_HOME" ] ; then
-    export XDG_DATA_HOME="$HOME/.local/share"
-fi
-if [ -z "$XDG_CACHE_HOME" ] ; then
-    export XDG_CACHE_HOME="$HOME/.cache"
-fi
-
-### PATH ###
-if [ -d "/usr/local/bin" ] ;
-    then PATH="/usr/local/bin:$PATH"
-fi
-
-if [ -d "$HOME/.emacs.d/bin" ] ;
-    then PATH="$HOME/.emacs.d/bin:$PATH"
-fi
-
-if [ -d  "$HOME/.local/bin" ] ; 
-    then PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d  "$HOME/bin" ] ; 
-    then PATH="$HOME/bin:$PATH"
-fi
-
-if [ -d  "$HOME/.cargo/bin" ] ; 
-    then PATH="$HOME/.cargo/bin:$PATH"
-fi
-
-if [ -d  "$HOME/go/bin" ] ; 
-    then PATH="$HOME/go/bin:$PATH"
-fi
-
-if [ -d  "$HOME/.lmstudio/bin" ] ; 
-    then PATH="$HOME/.lmstudio/bin:$PATH"
-fi
-
+### ANTIDOTE ###
+# `antidote load` regenerates ~/.zsh_plugins.zsh when ~/.zsh_plugins.txt changes, then sources it.
 source ~/.antidote/antidote.zsh
-
 antidote load
 
-# User configuration
+### ALIASES ###
+alias zshreload="source ~/.zshrc"
+alias ls="eza -l --color=always --group-directories-first"
+alias l="eza -l --color=always --group-directories-first"
+alias la="eza -alh --color=always --group-directories-first"
+alias ll='eza -l --color=always --group-directories-first'
+alias tree='eza -aT --color=always --group-directories-first'
+alias df="df -h"
+alias free="free -h"
+alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.State}}"'
+alias lg="lazygit"
+alias ..="cd .."
 
+### FUNCTIONS ###
+# yazi: cd to the directory yazi exits in
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
 	yazi "$@" --cwd-file="$tmp"
@@ -82,59 +71,7 @@ function y() {
 	rm -f -- "$tmp"
 }
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-
-alias zshreload="source ~/.zshrc"
-alias ls="eza -l --color=always --group-directories-first"
-alias l="eza -l --color=always --group-directories-first"
-alias la="eza -alh --color=always --group-directories-first"
-alias ll='eza -l --color=always --group-directories-first'  # long format
-alias tree='eza -aT --color=always --group-directories-first' # tree listing
-alias df="df -h"
-alias free="free -h"
-alias docker-status='docker ps -a --format "table{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.RunningFor}}\t{{.State}}"'
-alias plugins="antidote bundle <~/.zsh_plugins.txt >~/.zsh_plugins.zsh"
-alias lg="lazygit"
-alias ..="cd .."
-
-# Check if the current terminal is Kitty
-if [ -n "$KITTY_WINDOW_ID" ]; then
-  # Define a shell function named 'ssh' that overrides the default command
-    export TERM="xterm-kitty"
-fi
-
-# 
-# Check if the current terminal is Kitty
-if [ -n "$KITTY_WINDOW_ID" ]; then
-  # Define a shell function named 'ssh' that overrides the default command
-  ssh() {
-    # Check if 'kitty' is available in the PATH
-    if command -v kitty >/dev/null 2>&1; then
-      # Use the 'command' built-in to run the 'kitty' executable found in the PATH.
-      command kitty +kitten ssh "$@"
-    else
-      # Fallback to the system's default ssh command if kitty is not found
-      command ssh "$@"
-    fi
-  }
-fi
-
-YAZI_TERM=""
-if [ -n "$YAZI_LEVEL" ]; then
-	YAZI_TERM=" Yazi term!: "
-fi
-PS1="$PS1$YAZI_TERM"
-
-# =============================================================================
-#
-# Utility function for broot (br).
-# 
-# This script was automatically generated by the broot program
-# More information can be found in https://github.com/Canop/broot
-# This function starts broot and executes the command
-# it produces, if any.
-# It's needed because some shell commands, like `cd`,
-# have no useful effect if executed in a subshell.
+# broot: run the command broot produces (needed for cd)
 function br {
     local cmd cmd_file code
     cmd_file=$(mktemp)
@@ -149,201 +86,34 @@ function br {
     fi
 }
 
-# =============================================================================
-#
-# Utility functions for zoxide.
-#
-
-# pwd based on the value of _ZO_RESOLVE_SYMLINKS.
-function __zoxide_pwd() {
-    \builtin pwd -L
-}
-
-# cd + custom logic based on the value of _ZO_ECHO.
-function __zoxide_cd() {
-    # shellcheck disable=SC2164
-    \builtin cd -- "$@"
-}
-
-# =============================================================================
-#
-# Hook configuration for zoxide.
-#
-
-# Hook to add new entries to the database.
-function __zoxide_hook() {
-    # shellcheck disable=SC2312
-    \command zoxide add -- "$(__zoxide_pwd)"
-}
-
-# Initialize hook.
-# shellcheck disable=SC2154
-if [[ ${precmd_functions[(Ie)__zoxide_hook]:-} -eq 0 ]] && [[ ${chpwd_functions[(Ie)__zoxide_hook]:-} -eq 0 ]]; then
-    chpwd_functions+=(__zoxide_hook)
-fi
-
-# =============================================================================
-#
-# When using zoxide with --no-cmd, alias these internal functions as desired.
-#
-
-# Jump to a directory using only keywords.
-function __zoxide_z() {
-    # shellcheck disable=SC2199
-    if [[ "$#" -eq 0 ]]; then
-        __zoxide_cd ~
-    elif [[ "$#" -eq 1 ]] && { [[ -d "$1" ]] || [[ "$1" = '-' ]] || [[ "$1" =~ ^[-+][0-9]$ ]]; }; then
-        __zoxide_cd "$1"
+### KITTY ###
+if [ -n "$KITTY_WINDOW_ID" ]; then
+  export TERM="xterm-kitty"
+  ssh() {
+    if command -v kitty >/dev/null 2>&1; then
+      command kitty +kitten ssh "$@"
     else
-        \builtin local result
-        # shellcheck disable=SC2312
-        result="$(\command zoxide query --exclude "$(__zoxide_pwd)" -- "$@")" && __zoxide_cd "${result}"
+      command ssh "$@"
     fi
-}
-
-# Jump to a directory using interactive search.
-function __zoxide_zi() {
-    \builtin local result
-    result="$(\command zoxide query --interactive -- "$@")" && __zoxide_cd "${result}"
-}
-
-# =============================================================================
-#
-# Commands for zoxide. Disable these using --no-cmd.
-#
-
-function cd() {
-    __zoxide_z "$@"
-}
-
-function cdi() {
-    __zoxide_zi "$@"
-}
-
-# Completions.
-if [[ -o zle ]]; then
-    __zoxide_result=''
-
-    function __zoxide_z_complete() {
-        # Only show completions when the cursor is at the end of the line.
-        # shellcheck disable=SC2154
-        [[ "${#words[@]}" -eq "${CURRENT}" ]] || return 0
-
-        if [[ "${#words[@]}" -eq 2 ]]; then
-            # Show completions for local directories.
-            _files -/
-        elif [[ "${words[-1]}" == '' ]]; then
-            # Show completions for Space-Tab.
-            # shellcheck disable=SC2086
-            __zoxide_result="$(\command zoxide query --exclude "$(__zoxide_pwd || \builtin true)" --interactive -- ${words[2,-1]})" || __zoxide_result=''
-
-            # Bind '\e[0n' to helper function.
-            \builtin bindkey '\e[0n' '__zoxide_z_complete_helper'
-            # Send '\e[0n' to console input.
-            \builtin printf '\e[5n'
-        fi
-
-        # Report that the completion was successful, so that we don't fall back
-        # to another completion function.
-        return 0
-    }
-
-    function __zoxide_z_complete_helper() {
-        if [[ -n "${__zoxide_result}" ]]; then
-            # shellcheck disable=SC2034,SC2296
-            BUFFER="cd ${(q-)__zoxide_result}"
-            \builtin zle reset-prompt
-            \builtin zle accept-line
-        else
-            \builtin zle reset-prompt
-        fi
-    }
-    \builtin zle -N __zoxide_z_complete_helper
-
-    [[ "${+functions[compdef]}" -ne 0 ]] && \compdef __zoxide_z_complete cd
+  }
 fi
 
-# =============================================================================
-#
-# To initialize zoxide, add this to your configuration (usually ~/.zshrc):
-#
-
-[ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && \. "/opt/homebrew/opt/nvm/nvm.sh"  # This loads nvm
-
-eval "$(zoxide init zsh)"
+### PROMPT ###
 eval "$(starship init zsh)"
-eval "$(zellij setup --generate-auto-start zsh)"
-# This block sets up the Homebrew environment dynamically.
-# It checks for the OS and then attempts to find the correct path to 'brew'.
 
-# Determine the operating system.
-OS_NAME="$(uname -s)"
+### DEFERRED (run after the first prompt is drawn) ###
+# zoxide replaces cd with a smart cd (cdi = interactive)
+zsh-defer -c 'eval "$(zoxide init zsh --cmd cd)"'
+zsh-defer -c 'eval "$(direnv hook zsh)"'
+zsh-defer -c 'eval "$(pyenv init - zsh)"; eval "$(pyenv virtualenv-init - zsh)"'
+zsh-defer -c '[ -s /opt/homebrew/opt/nvm/nvm.sh ] && . /opt/homebrew/opt/nvm/nvm.sh'
+zsh-defer -c '[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh'
 
-# Set the potential Homebrew path based on the OS.
-if [ "$OS_NAME" = "Darwin" ]; then
-  # For macOS, check both possible Homebrew installation paths.
-  if [ -f "/opt/homebrew/bin/brew" ]; then
-    BREW_PATH="/opt/homebrew/bin/brew"
-  elif [ -f "/usr/local/bin/brew" ]; then
-    BREW_PATH="/usr/local/bin/brew"
-  fi
-elif [ "$OS_NAME" = "Linux" ]; then
-  # For Linux, check the standard Linuxbrew installation path.
-  if [ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]; then
-    BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
-  fi
-fi
-
-# If we found a valid path to brew, run 'shellenv' to set up the environment.
-if [ -n "$BREW_PATH" ]; then
-  eval "$($BREW_PATH shellenv)"
-fi
-
-# Add Homebrew completion directory to fpath if Homebrew is installed
-if [ -n "$BREW_PATH" ]; then
-  fpath+="$BREW_PATH/share/zsh/site-functions"
-fi
-
-# This sets the FZF_ALT_C_COMMAND variable to an empty string,
-# which disables the Alt-C key binding for fuzzy-finding directories.
-export FZF_ALT_C_COMMAND=""
-
-# This sources the fzf script and sets up all the key bindings and
-# completion functions in your Zsh shell.
-# source <(fzf --zsh)
-
-# . "$HOME/.local/share/../bin/env"
-source /opt/newscorp/zscaler/zscaler.inc
-
-source /Users/oscar.dealva/Documents/REALTOR/zscaler-setup-utils/zscaler-macos.sh
-
-zscaler setup-env
-
-eval "$(direnv hook zsh)"
-
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
-
-export SSL_CERT_FILE=/etc/ssl/cert.pem
-export REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
-
-# Added by Windsurf
-export PATH="/Users/oscar.dealva/.codeium/windsurf/bin:$PATH"
-
-# Added by Windsurf
-export PATH="/Users/oscar.dealva/.codeium/windsurf/bin:$PATH"
-
+### TOOL-MANAGED BLOCKS (keep markers; installers edit these) ###
 # RDC Claude Code shell integration
 [ -f "$HOME/.claude/shell-init.sh" ] && source "$HOME/.claude/shell-init.sh"
 # END RDC Claude Code shell integration
 
-# Added by Devin
-export PATH="/Users/oscar.dealva/.local/bin:$PATH"
-
-# Cortex CLI completion (disable via /settings in cortex)
-[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
 # >>> nc-os completions >>>
 command -v nc-os >/dev/null 2>&1 && (( $+functions[compdef] )) && source <(nc-os completions zsh)
 # <<< nc-os completions <<<
