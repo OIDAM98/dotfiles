@@ -310,4 +310,40 @@ export FZF_ALT_C_COMMAND=""
 
 # This sources the fzf script and sets up all the key bindings and
 # completion functions in your Zsh shell.
-source <(fzf --zsh)
+# source <(fzf --zsh)
+
+# . "$HOME/.local/share/../bin/env"
+source /opt/newscorp/zscaler/zscaler.inc
+
+source /Users/oscar.dealva/Documents/REALTOR/zscaler-setup-utils/zscaler-macos.sh
+
+zscaler setup-env
+
+eval "$(direnv hook zsh)"
+
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+export SSL_CERT_FILE=/etc/ssl/cert.pem
+export REQUESTS_CA_BUNDLE=/etc/ssl/cert.pem
+
+# Added by Windsurf
+export PATH="/Users/oscar.dealva/.codeium/windsurf/bin:$PATH"
+
+# Added by Windsurf
+export PATH="/Users/oscar.dealva/.codeium/windsurf/bin:$PATH"
+
+# RDC Claude Code shell integration
+[ -f "$HOME/.claude/shell-init.sh" ] && source "$HOME/.claude/shell-init.sh"
+# END RDC Claude Code shell integration
+
+# Added by Devin
+export PATH="/Users/oscar.dealva/.local/bin:$PATH"
+
+# Cortex CLI completion (disable via /settings in cortex)
+[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh
+# >>> nc-os completions >>>
+command -v nc-os >/dev/null 2>&1 && (( $+functions[compdef] )) && source <(nc-os completions zsh)
+# <<< nc-os completions <<<
