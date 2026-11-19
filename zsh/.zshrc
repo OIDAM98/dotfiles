@@ -110,11 +110,6 @@ zsh-defer -c 'eval "$(pyenv init - zsh)"; eval "$(pyenv virtualenv-init - zsh)"'
 zsh-defer -c 'if [ -s /opt/homebrew/opt/nvm/nvm.sh ]; then . /opt/homebrew/opt/nvm/nvm.sh; elif [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; fi'
 zsh-defer -c '[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh'
 
-### TOOL-MANAGED BLOCKS (keep markers; installers edit these) ###
-# RDC Claude Code shell integration
-[ -f "$HOME/.claude/shell-init.sh" ] && source "$HOME/.claude/shell-init.sh"
-# END RDC Claude Code shell integration
-
-# >>> nc-os completions >>>
-command -v nc-os >/dev/null 2>&1 && (( $+functions[compdef] )) && source <(nc-os completions zsh)
-# <<< nc-os completions <<<
+### MACHINE-LOCAL ###
+# Work-specific and installer-managed lines (Claude, nc-os, etc.) live in ~/.zshrc.local, not versioned.
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"

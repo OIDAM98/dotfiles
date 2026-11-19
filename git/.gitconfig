@@ -29,13 +29,9 @@
 [diff]
 	colorMoved = default
 
-# Per-directory identities. Trailing "/" matters: it matches every repo below the directory.
-# These files live outside this repo and set user.name, user.email and core.sshCommand.
-[includeIf "gitdir:~/Documents/FEMSA/"]
-	path = ~/Documents/FEMSA/.gitconfig-work
-
-[includeIf "gitdir:~/Documents/REALTOR/"]
-	path = ~/Documents/REALTOR/.gitconfig-realtor
+# Per-directory work identities (includeIf blocks) live in ~/.gitconfig-local, which is
+# not versioned. Those files set user.name, user.email and core.sshCommand per directory.
+# Trailing "/" in a gitdir pattern matches every repo below that directory.
 
 # Machine-local settings (not versioned), e.g. the Zscaler CA cert on the work laptop.
 [include]
