@@ -1,0 +1,8 @@
+# Per-directory identity, e.g. ~/Documents/Work/.gitconfig-work (not versioned).
+# Pulled in by an includeIf block in ~/.gitconfig-local. It overrides the personal default.
+[user]
+	name = Your Name
+	email = you@example.com
+
+[core]
+	sshCommand = ssh -i ~/.ssh/your_work_key -o IdentitiesOnly=yes

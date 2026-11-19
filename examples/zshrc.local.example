@@ -1,0 +1,8 @@
+# Machine-local zsh config. Copy to ~/.zshrc.local (sourced at the end of ~/.zshrc). Not versioned.
+# Put work-specific lines and anything an installer wants to append to your shell config here.
+
+# Example: corporate proxy/TLS setup
+# source /path/to/corporate-shell-setup.sh
+
+# Example: tool integrations that add their own marker blocks
+# [ -f "$HOME/.some-tool/shell-init.sh" ] && source "$HOME/.some-tool/shell-init.sh"

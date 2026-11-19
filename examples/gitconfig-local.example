@@ -1,0 +1,17 @@
+# Machine-local git settings. Copy to ~/.gitconfig-local (it is included from git/.gitconfig;
+# git ignores the include when the file is missing). Never commit the real file.
+
+# Corporate TLS inspection CA (work laptop only)
+[http]
+	sslCAInfo = /path/to/corporate-root-ca.pem
+
+# Per-directory identities. The trailing "/" matches every repo below the directory.
+# Each target file sets user.name, user.email and core.sshCommand (see gitconfig-identity.example).
+[includeIf "gitdir:~/Documents/Work/"]
+	path = ~/Documents/Work/.gitconfig-work
+
+# Optional: apply an identity by remote URL, wherever the repo is cloned (git 2.36+)
+[includeIf "hasconfig:remote.*.url:git@github.com:your-org/**"]
+	path = ~/Documents/Work/.gitconfig-work
+[includeIf "hasconfig:remote.*.url:https://github.com/your-org/**"]
+	path = ~/Documents/Work/.gitconfig-work

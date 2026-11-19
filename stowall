@@ -21,6 +21,7 @@ for package_path in "${DOTFILES}"/*; do
      [ "${package_name}" = "." ] || \
      [ "${package_name}" = ".." ] || \
      [ "${package_name}" = ".git" ] || \
+     [ "${package_name}" = "examples" ] || \
      [[ "${package_name}" == ".stow-global-ignore" ]]; then
     continue
   fi
