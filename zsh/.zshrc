@@ -106,7 +106,8 @@ eval "$(starship init zsh)"
 zsh-defer -c 'eval "$(zoxide init zsh --cmd cd)"'
 zsh-defer -c 'eval "$(direnv hook zsh)"'
 zsh-defer -c 'eval "$(pyenv init - zsh)"; eval "$(pyenv virtualenv-init - zsh)"'
-zsh-defer -c '[ -s /opt/homebrew/opt/nvm/nvm.sh ] && . /opt/homebrew/opt/nvm/nvm.sh'
+# nvm: prefer the Homebrew install, fall back to ~/.nvm
+zsh-defer -c 'if [ -s /opt/homebrew/opt/nvm/nvm.sh ]; then . /opt/homebrew/opt/nvm/nvm.sh; elif [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; fi'
 zsh-defer -c '[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh'
 
 ### TOOL-MANAGED BLOCKS (keep markers; installers edit these) ###
