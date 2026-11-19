@@ -1,4 +1,5 @@
-# Homebrew packages for these dotfiles (generated from `brew leaves` on 2026-11-19, grouped by purpose).
+# Homebrew packages for these dotfiles, used on macOS and Linux (Linuxbrew).
+# Generated from `brew leaves` on 2026-11-19, grouped by purpose.
 # Install everything:   brew bundle --file=~/dotfiles/Brewfile
 # Check what's missing: brew bundle check --file=~/dotfiles/Brewfile
 # Not managed here: antidote (git clone to ~/.antidote), nvm (~/.nvm), mpls (go install), rustup (~/.cargo).
@@ -66,12 +67,14 @@ brew "httpie"
 # --- build ---
 brew "cmake"
 
-# --- fonts ---
-cask "font-fira-code"
-cask "font-iosevka"
-cask "font-iosevka-ss04"
-cask "font-jetbrains-mono"
-cask "font-symbols-only-nerd-font"
+# --- fonts (casks are macOS only; on Linux install fonts into ~/.local/share/fonts) ---
+if OS.mac?
+  cask "font-fira-code"
+  cask "font-iosevka"
+  cask "font-iosevka-ss04"
+  cask "font-jetbrains-mono"
+  cask "font-symbols-only-nerd-font"
+end
 
 # Installed outside Homebrew on this machine (add as casks if you want brew to manage them):
 # cask "kitty"

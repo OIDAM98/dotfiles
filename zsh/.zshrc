@@ -18,7 +18,10 @@ export PYENV_ROOT="$HOME/.pyenv"
 
 ### PATH (deduplicated; first entry wins) ###
 typeset -U path PATH fpath
-[[ -x /opt/homebrew/bin/brew ]] && eval "$(/opt/homebrew/bin/brew shellenv)"
+for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+  [[ -x $_brew ]] && { eval "$("$_brew" shellenv)"; break; }
+done
+unset _brew
 path=(
   $HOME/bin
   $HOME/.local/bin
@@ -33,7 +36,7 @@ path=(
   $path
 )
 path=(${^path}(N-/))   # drop entries that don't exist
-[[ -d /opt/homebrew/share/zsh/site-functions ]] && fpath+=(/opt/homebrew/share/zsh/site-functions)
+[[ -n $HOMEBREW_PREFIX && -d $HOMEBREW_PREFIX/share/zsh/site-functions ]] && fpath+=($HOMEBREW_PREFIX/share/zsh/site-functions)
 fpath=(~/.zsh/completions $fpath)
 
 ### ZELLIJ auto-start ###
@@ -107,7 +110,7 @@ zsh-defer -c 'eval "$(zoxide init zsh --cmd cd)"'
 zsh-defer -c 'eval "$(direnv hook zsh)"'
 zsh-defer -c 'eval "$(pyenv init - zsh)"; eval "$(pyenv virtualenv-init - zsh)"'
 # nvm: prefer the Homebrew install, fall back to ~/.nvm
-zsh-defer -c 'if [ -s /opt/homebrew/opt/nvm/nvm.sh ]; then . /opt/homebrew/opt/nvm/nvm.sh; elif [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; fi'
+zsh-defer -c 'if [ -n "$HOMEBREW_PREFIX" ] && [ -s "$HOMEBREW_PREFIX/opt/nvm/nvm.sh" ]; then . "$HOMEBREW_PREFIX/opt/nvm/nvm.sh"; elif [ -s "$NVM_DIR/nvm.sh" ]; then . "$NVM_DIR/nvm.sh"; fi'
 zsh-defer -c '[[ -s ~/.zsh/completions/cortex.zsh ]] && source ~/.zsh/completions/cortex.zsh'
 
 ### MACHINE-LOCAL ###

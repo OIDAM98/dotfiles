@@ -3,8 +3,8 @@
 #
 #   ./install.sh [-n|--dry-run] [--no-packages] [--no-stow]
 #
-# macOS:          Homebrew (installed if missing) + `brew bundle` from the Brewfile
-# Ubuntu/Debian:  nala + packages-apt.txt via ./packages.sh
+# Ubuntu/Debian:  apt/nala only for Homebrew's prerequisites and zsh (./packages.sh)
+# macOS + Linux:  Homebrew (installed if missing), then `brew bundle` from the Brewfile
 # Both:           antidote -> ~/.antidote, yazi plugins (if yazi is installed), ./stowall
 #
 # Machine-local files (work identities, corporate certs) are NOT created here; copy the
@@ -40,29 +40,40 @@ fi
 
 echo "== Detected: ${os} ${distro}"
 
+find_brew() {
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew "$HOME/.linuxbrew/bin/brew"; do
+    [ -x "$b" ] && { echo "$b"; return 0; }
+  done
+  command -v brew
+}
+
 if [ "$do_packages" -eq 1 ]; then
   case "$os" in
-    Darwin)
-      if ! command -v brew >/dev/null 2>&1; then
-        echo "== Installing Homebrew"
-        run /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-        [ "$dry_run" -eq 0 ] && eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
-      fi
-      echo "== brew bundle"
-      run brew bundle --file="${DOTFILES}/Brewfile"
-      ;;
+    Darwin) ;;
     Linux)
       if [[ "$distro" == *ubuntu* || "$distro" == *debian* ]]; then
-        echo "== Ubuntu/Debian packages (nala)"
+        echo "== System packages (apt/nala): Homebrew prerequisites and zsh"
         DRY_RUN="$dry_run" "${DOTFILES}/packages.sh" install
-        echo "Not covered by apt (install separately): starship, helix, yazi, zellij, lazygit, git-delta, glow, sqruff."
-        echo "See the Brewfile for the full tool list."
       else
-        echo "Unsupported Linux distro (${distro}); skipping packages. Install the tools from the Brewfile manually."
+        echo "Unsupported Linux distro (${distro}): install Homebrew's prerequisites manually."
       fi
       ;;
-    *) echo "Unsupported OS: ${os}; skipping packages." ;;
+    *) echo "Unsupported OS: ${os}; skipping packages."; do_packages=0 ;;
   esac
+fi
+
+if [ "$do_packages" -eq 1 ]; then
+  brew_bin="$(find_brew || true)"
+  if [ -z "$brew_bin" ]; then
+    echo "== Installing Homebrew"
+    run /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    brew_bin="$(find_brew || true)"
+  fi
+  if [ -n "$brew_bin" ]; then
+    eval "$("$brew_bin" shellenv)"
+  fi
+  echo "== brew bundle"
+  run brew bundle --file="${DOTFILES}/Brewfile"
 fi
 
 echo "== antidote"

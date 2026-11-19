@@ -4,7 +4,7 @@ My configuration for macOS and Ubuntu/Debian. Each top-level folder is a [GNU St
 
 - **Shell:** zsh with [antidote](https://github.com/mattmc3/antidote) (plugins in `zsh/.zsh_plugins.txt`), starship, zoxide, zellij auto-start
 - **Editor and tools:** helix (with sqruff for SQL and yaml-language-server), yazi, lazygit, kitty and others
-- **Packages:** `Brewfile` on macOS, `packages-apt.txt` on Ubuntu/Debian
+- **Packages:** one `Brewfile` for Homebrew on macOS and Linux; `packages-apt.txt` only has the Ubuntu/Debian prerequisites
 
 ## New machine
 
@@ -17,8 +17,8 @@ cd ~/dotfiles
 
 `install.sh` detects the OS and then:
 
-- **macOS:** installs Homebrew if missing, then runs `brew bundle` on the `Brewfile`
-- **Ubuntu/Debian:** installs `nala` and the packages in `packages-apt.txt` through `./packages.sh`
+- **Ubuntu/Debian:** installs `nala` and the few system packages in `packages-apt.txt` (Homebrew prerequisites and zsh) through `./packages.sh`
+- **macOS and Linux:** installs Homebrew if missing (Linuxbrew on Linux), then runs `brew bundle` on the shared `Brewfile`
 - **Both:** clones antidote to `~/.antidote`, runs `./stowall`, and installs yazi plugins if yazi is present
 
 Options: `--no-packages`, `--no-stow`, `-n/--dry-run`.
@@ -45,4 +45,5 @@ Work identities, corporate certificates and installer-added shell lines are kept
 ## Notes
 
 - Yazi plugins and flavors are installed from `package.toml` with `ya pkg install`; they are not versioned.
+- Fonts are Homebrew casks on macOS only; on Linux put them in `~/.local/share/fonts`.
 - `./packages.sh export` lists the packages you installed by hand with nala (Ubuntu).

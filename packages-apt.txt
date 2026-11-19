@@ -1,19 +1,10 @@
-# Baseline packages for Ubuntu/Debian, installed by `./packages.sh` (via nala).
-# Names that don't exist in the current release are skipped with a note.
-# Tools without a good apt package (starship, helix, yazi, zellij, lazygit, git-delta, glow,
-# sqruff, yaml-language-server, ...) are not listed here; see the Brewfile for the full set.
+# Ubuntu/Debian packages installed with apt/nala by ./packages.sh.
+# Everything else comes from Homebrew (Linuxbrew) through the Brewfile.
+# These are Homebrew's own prerequisites plus zsh (so chsh and /etc/shells work out of the box).
+build-essential
+procps
+curl
+file
 git
 zsh
-stow
-curl
-wget
 unzip
-ripgrep
-fd-find
-fzf
-jq
-bat
-direnv
-zoxide
-eza
-htop
