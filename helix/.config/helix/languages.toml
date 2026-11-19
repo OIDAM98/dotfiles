@@ -24,8 +24,9 @@ name = "sql"
 indent = { tab-width = 2, unit = "  " }
 language-servers = ["sqruff"]
 # Dialect comes from ~/.config/sqruff/.sqruff (snowflake) or a project .sqruff.
-# Lint report goes to stderr, so stdout is only the formatted SQL.
-formatter = { command = "sqruff", args = ["fix", "-"] }
+# sqruff writes its lint report to stderr, and Helix treats any stderr output as a
+# formatter failure, so drop it. stdout is only the formatted SQL.
+formatter = { command = "sh", args = ["-c", "sqruff fix - 2>/dev/null"] }
 auto-format = false # format on demand with `:format`
 
 [language-server.sqruff]
