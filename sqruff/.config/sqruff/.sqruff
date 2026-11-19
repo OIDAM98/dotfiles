@@ -1,3 +1,7 @@
 # sqruff global config (applies to every project without its own .sqruff)
 [sqruff]
 dialect = snowflake
+
+[sqruff:indentation]
+tab_space_size = 2
+indent_unit = space
