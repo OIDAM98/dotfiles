@@ -45,9 +45,15 @@ render = true
 H = ":buffer-previous"
 L = ":buffer-next"
 "+" = "extend_line_below" # extend selection by one line below (Ctrl/Alt are taken by zellij)
+S-down = "page_cursor_half_down" # half page down (Ctrl-d is detach in zellij)
+S-up = "page_cursor_half_up"     # half page up (Ctrl-u equivalent)
 esc = ["collapse_selection", "keep_primary_selection"]
 # Ctrl keys are taken by zellij, so save/config live under space (W = write, O = open config)
 "ret" = ["open_below", "normal_mode"] # Maps the enter key to open_below then re-enter normal mode
+
+[keys.select]
+S-down = "page_cursor_half_down"
+S-up = "page_cursor_half_up"
 
 [keys.normal.space]
 W = ":write"
