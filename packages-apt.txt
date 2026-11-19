@@ -1,0 +1,19 @@
+# Baseline packages for Ubuntu/Debian, installed by `./packages.sh` (via nala).
+# Names that don't exist in the current release are skipped with a note.
+# Tools without a good apt package (starship, helix, yazi, zellij, lazygit, git-delta, glow,
+# sqruff, yaml-language-server, ...) are not listed here; see the Brewfile for the full set.
+git
+zsh
+stow
+curl
+wget
+unzip
+ripgrep
+fd-find
+fzf
+jq
+bat
+direnv
+zoxide
+eza
+htop
