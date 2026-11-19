@@ -41,5 +41,10 @@ formatter = { command = 'ruff', args = [
 
 [language-server.pylsp.config.pylsp.plugins]
 pylsp_mypy.enabled = true
-pylsp_mypy.live_mode = true
+pylsp_mypy.live_mode = false
 rope_autoimport.enabled = true
+pycodestyle.enabled = false
+pyflakes.enabled = false
+mccabe.enabled = false
+autopep8.enabled = false
+yapf.enabled = false
