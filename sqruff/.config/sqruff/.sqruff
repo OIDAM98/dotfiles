@@ -1,0 +1,3 @@
+# sqruff global config (applies to every project without its own .sqruff)
+[sqruff]
+dialect = snowflake
