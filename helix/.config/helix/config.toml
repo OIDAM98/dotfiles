@@ -5,6 +5,8 @@ line-number = "relative"
 color-modes = true
 true-color = true
 bufferline = "multiple"
+cursorline = true
+end-of-line-diagnostics = "hint"
 
 [editor.statusline]
 left = ["mode", "spinner", "register"]
@@ -14,6 +16,9 @@ separator = "|"
 mode.normal = "NORMAL"
 mode.insert = "INSERT"
 mode.select = "SELECT"
+
+[editor.inline-diagnostics]
+cursor-line = "warning"
 
 [editor.cursor-shape]
 insert = "bar"
@@ -37,14 +42,24 @@ tabpad = "·" # Tabs will look like "→···" (depending on tab width)
 render = true
 
 [keys.normal]
+H = ":buffer-previous"
+L = ":buffer-next"
+"+" = "extend_line_below" # extend selection by one line below (Ctrl/Alt are taken by zellij)
+S-down = "page_cursor_half_down" # half page down (Ctrl-d is detach in zellij)
+S-up = "page_cursor_half_up"     # half page up (Ctrl-u equivalent)
 esc = ["collapse_selection", "keep_primary_selection"]
-g = { a = "code_action" } # Maps `ga` to show possible code actions
-C-s = ":w" # Maps Ctrl-s to the typable command :w which is an alias for :write (save file)
-C-o = ":open ~/.config/helix/config.toml" # Maps Ctrl-o to opening of the helix config file
-"C-S-esc" = "extend_line" # Maps Ctrl-Shift-Escape to extend_line
+# Ctrl keys are taken by zellij, so save/config live under space (W = write, O = open config)
 "ret" = ["open_below", "normal_mode"] # Maps the enter key to open_below then re-enter normal mode
 
+[keys.select]
+S-down = "page_cursor_half_down"
+S-up = "page_cursor_half_up"
+
 [keys.normal.space]
+W = ":write"
+O = ":open ~/.config/helix/config.toml"
+q = ":buffer-close"
+Q = ":buffer-close-others"
 x = ":toggle whitespace.render all none" # Toggles whitespace characters
 l = [
     ":write-all",
@@ -63,6 +78,50 @@ e = [
   ":redraw",
   ":reload-all",
   ":sh clear",
+]
+
+# Snowflake SQL menu: `space n` then a key. Every run goes through snow-run.sh
+# (live timer on the bottom row) and opens the result buffer. The script picks
+# the format: if the last statement returned rows it opens
+# /tmp/snow-results/<name>_result.csv, otherwise <name>_result.txt (the .txt grid
+# with every result set is always written too).
+# `:insert-output` blocks until the run finishes (`:sh` is async). `ga` returns
+# to the SQL file. Helix 25.07 has no menu labels, so entries show as
+# [Multiple commands] (or the command text).
+#   r = run the whole file
+#   c = run the current statement (the one around the cursor, split on ';')
+#   s = run the primary selection (results named <name>_selection_result.*)
+#   b = run the whole file in the background (Helix stays usable; a macOS
+#       notification fires when it finishes; open it with `o`)
+#   o = reopen the last result
+# Single statements and selections run alone, so `use ...`/`set ...` lines
+# earlier in the file do not apply to them.
+[keys.normal.space.n]
+r = [
+  ":write",
+  ":insert-output ~/.config/helix/snow-run.sh '%{buffer_name}'",
+  ":open %sh{cat /tmp/snow-results/.last}",
+  ":reload",
+]
+c = [
+  ":write",
+  ":insert-output ~/.config/helix/snow-run.sh --statement '%{buffer_name}' %{cursor_line}",
+  ":open %sh{cat /tmp/snow-results/.last}",
+  ":reload",
+]
+b = [
+  ":write",
+  ":sh ~/.config/helix/snow-run.sh --background '%{buffer_name}'",
+]
+# The selection goes in through a quoted heredoc so quotes in the SQL survive.
+s = [
+  ":insert-output ~/.config/helix/snow-run.sh --selection '%{buffer_name}' <<'HXSELEOF'\n%{selection}\nHXSELEOF",
+  ":open %sh{cat /tmp/snow-results/.last}",
+  ":reload",
+]
+o = [
+  ":open %sh{cat /tmp/snow-results/.last}",
+  ":reload",
 ]
 
 [keys.normal.space.t]

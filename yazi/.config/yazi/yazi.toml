@@ -1,7 +1,7 @@
 [mgr]
 show_hidden = true
 sort_dir_first = true
-sorty_by = "alphabetical"
+sort_by = "alphabetical"
 ratio = [1,2,5]
 
 [plugin]
@@ -19,7 +19,6 @@ prepend_previewers = [
   { url = "*.tsv", run = "duckdb" },  
   { url = "*.json", run = "duckdb" },  
   { url = "*.parquet", run = "duckdb" },  
-  { url = "*.txt", run = "duckdb" },  
   { url = "*.xlsx", run = "duckdb" },  
   { url = "*.db", run = "duckdb" },
   { url = "*.duckdb", run = "duckdb" },
@@ -30,7 +29,6 @@ prepend_preloaders = [
   { url = "*.tsv", run = "duckdb", multi = false },  
   { url = "*.json", run = "duckdb", multi = false },  
   { url = "*.parquet", run = "duckdb", multi = false },
-  { url = "*.txt", run = "duckdb", multi = false },  
   { url = "*.xlsx", run = "duckdb", multi = false }
 ]
 

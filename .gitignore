@@ -3,3 +3,8 @@ yazi/.config/yazi/plugins/*
 yazi/.config/yazi/flavors/*
 !yazi/.config/yazi/plugins/.gikeep
 !yazi/.config/yazi/flavors/.gikeep
+
+# Per-machine snow-run settings. The real file lives in ~/.config/snow-run/env,
+# outside this repo; these lines are a safety net if a copy ends up in here.
+snow-run.env
+snow-run/env

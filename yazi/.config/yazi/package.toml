@@ -1,32 +1,27 @@
 [[plugin.deps]]
 use = "yazi-rs/plugins:git"
-rev = "8cd50c6"
-hash = "88e56a64b7ce7c4314427452343fef17"
+rev = "1ef5fe0"
+hash = "347cc6b190eb0c2fd60513cc7ae37412"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:full-border"
-rev = "8cd50c6"
-hash = "7b625412411be411153886894d9acaf"
+rev = "1ef5fe0"
+hash = "17ebde15c4349f90aedbc45984b98db2"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:diff"
-rev = "8cd50c6"
-hash = "39ce0924dfe3989dc89d7caa1473c77c"
+rev = "1ef5fe0"
+hash = "14558d2829c0aa05e99c57de8f74d199"
 
 [[plugin.deps]]
 use = "ndtoan96/ouch"
-rev = "406ce6c"
-hash = "f5afc904d5106ee368c8aa2ded43bd74"
+rev = "596b666"
+hash = "c2f4f4aca257dcceafa9e3b828dbf1c9"
 
 [[plugin.deps]]
 use = "wylie102/duckdb"
 rev = "3f8c863"
 hash = "87b9233a74325e95011670ed20bbd0d4"
-
-[[plugin.deps]]
-use = "Reledia/glow"
-rev = "bd3eaa5"
-hash = "92b5c58159a51c567f82b618cee2b78"
 
 [[plugin.deps]]
 use = "Lil-Dank/lazygit"
@@ -35,15 +30,15 @@ hash = "6ea5f37c7f219671ec504cb8311f889d"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:toggle-pane"
-rev = "8cd50c6"
-hash = "15e5b67a241172cbb86b8fbf9e63692"
+rev = "1ef5fe0"
+hash = "5b2fbef7d1513ce38ff72623a071a5e"
 
 [[plugin.deps]]
 use = "yazi-rs/plugins:piper"
-rev = "8cd50c6"
-hash = "e0d59bd47866a6a574c74574097e5070"
+rev = "1ef5fe0"
+hash = "d1e0499cae5f3aeb628c267616d4b682"
 
 [[flavor.deps]]
 use = "yazi-rs/flavors:catppuccin-mocha"
-rev = "4770a34"
-hash = "7dfe41c9c3d9be76da8a844263d0bbed"
+rev = "38c08d8"
+hash = "57d33c9c6107017bf8afc8df186356c5"
