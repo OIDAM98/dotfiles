@@ -8,3 +8,7 @@ yazi/.config/yazi/flavors/*
 # outside this repo; these lines are a safety net if a copy ends up in here.
 snow-run.env
 snow-run/env
+
+# Zed: track settings.json only; the rest is Zed's own data
+zed/.config/zed/*
+!zed/.config/zed/settings.json
