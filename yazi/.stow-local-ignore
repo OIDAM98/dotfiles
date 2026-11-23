@@ -1,0 +1,3 @@
+# Plugins and flavors are installed from package.toml (`ya pkg install`), not versioned or linked.
+^/\.config/yazi/plugins
+^/\.config/yazi/flavors

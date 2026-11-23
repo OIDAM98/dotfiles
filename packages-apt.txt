@@ -1,0 +1,10 @@
+# Ubuntu/Debian packages installed with apt/nala by ./packages.sh.
+# Everything else comes from Homebrew (Linuxbrew) through the Brewfile.
+# These are Homebrew's own prerequisites plus zsh (so chsh and /etc/shells work out of the box).
+build-essential
+procps
+curl
+file
+git
+zsh
+unzip

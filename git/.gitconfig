@@ -1,13 +1,18 @@
+# Default identity: personal. Work identities are applied per directory (includeIf below).
 [user]
 	name = Oscar De Alva
 	email = oscar.ivan98@gmail.com
-[init]
-	defaultBranch = main
-[alias]
-	logline = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
 [core]
 	editor = hx
 	pager = delta
+	sshCommand = ssh -i ~/.ssh/personal -o IdentitiesOnly=yes
+
+[init]
+	defaultBranch = main
+
+[alias]
+	logline = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 
 [interactive]
 	diffFilter = delta --color-only
@@ -24,5 +29,13 @@
 [diff]
 	colorMoved = default
 
-[includeIf "gitdir:~/Documents/FEMSA/"]
-	path = ~/Documents/FEMSA/.gitconfig-work
+# Per-directory work identities (includeIf blocks) live in ~/.gitconfig-local, which is
+# not versioned. Those files set user.name, user.email and core.sshCommand per directory.
+# Trailing "/" in a gitdir pattern matches every repo below that directory.
+
+# Machine-local settings (not versioned), e.g. the Zscaler CA cert on the work laptop.
+[include]
+	path = ~/.gitconfig-local
+
+[include]
+	path = ~/.nc-os/gitconfig

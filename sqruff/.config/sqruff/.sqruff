@@ -1,0 +1,10 @@
+# sqruff global config (applies to every project without its own .sqruff)
+[sqruff]
+dialect = snowflake
+max_line_length = 100
+# core rules plus LT09 (one select target per line) and LT14 (each clause on its own line)
+rules = core, LT09, LT14
+
+[sqruff:indentation]
+tab_space_size = 2
+indent_unit = space

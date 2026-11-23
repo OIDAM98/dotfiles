@@ -1,77 +1,75 @@
 #!/usr/bin/env bash
+# Symlink every package in this repo into $HOME with GNU Stow.
+#
+# Usage: ./stowall [-n|--dry-run] [--adopt] [package ...]
+#   -n, --dry-run   show what would be linked, change nothing
+#   --adopt         if a real file already exists where a link should go, MOVE it into the
+#                   repo (overwriting the repo copy). Off by default: on a new machine it would
+#                   replace your configs with the defaults. Review with `git diff` afterwards.
+#   package ...     only these packages (default: every top-level folder except examples/)
+#
+# Without --adopt, a real file in the way is reported as a conflict and left alone: move or
+# delete it, then re-run.
 
-set -e # Exit immediately if a command exits with a non-zero status
+set -euo pipefail
 
-DOTFILES="${HOME}/dotfiles"
-TARGET_HOME="${HOME}"
-TARGET_CONFIG="${HOME}/.config"
+DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TARGET="${HOME}"
+EXCLUDE=("examples")
 
-echo "Starting Stow process for dotfiles packages..."
-echo "---"
+dry_run=0
+adopt=0
+packages=()
 
-# Ensure the target ~/.config directory exists.
-mkdir -p "${TARGET_CONFIG}"
-
-# Iterate through each top-level package folder in your dotfiles directory
-for package_path in "${DOTFILES}"/*; do
-  package_name="$(basename "${package_path}")"
-
-  # Skip if not a directory, or if it's special Git/Stow internal folders
-  if ! [ -d "${package_path}" ] || \
-     [ "${package_name}" = "." ] || \
-     [ "${package_name}" = ".." ] || \
-     [ "${package_name}" = ".git" ] || \
-     [[ "${package_name}" == ".stow-global-ignore" ]]; then
-    continue
-  fi
-
-  echo "== Processing package: ${package_name} =="
-
-  # Using a temporary file to pass the boolean flag out of the subshell
-  TEMP_FLAG_FILE=$(mktemp)
-  trap "rm -f ${TEMP_FLAG_FILE}" EXIT # Ensure cleanup even on script exit
-
-  found_existing_target_persisted="" # Initialize the variable
-
-  # Find all potential files/directories within the package that Stow would manage
-  find "${package_path}" -mindepth 1 -print0 | while IFS= read -r -d $'\0' item_source_path; do
-    # Get the path of the item relative to the package root
-    relative_path="${item_source_path#${package_path}/}"
-
-    # Skip files Stow ignores
-    if [[ "$(basename "${relative_path}")" == ".stow-local-ignore" ]] || \
-       [[ "$(basename "${relative_path}")" == "README"* ]] || \
-       [[ "$(basename "${relative_path}")" == "LICENSE"* ]]; then
-      continue
-    fi
-
-    # Construct the final destination path.
-    target_item_path="${TARGET_HOME}/${relative_path}"
-
-    # Check if a file or symlink already exists at the target location
-    if [ -e "${target_item_path}" ]; then
-      echo "  - Found existing target: ${target_item_path}"
-      echo "true" > "${TEMP_FLAG_FILE}"
-      break # Found one, no need to check further for this package
-    fi
-  done
-  
-  # Read the flag value back from the temporary file
-  if [ -s "${TEMP_FLAG_FILE}" ]; then
-    found_existing_target_persisted="true"
-  fi
-  rm -f "${TEMP_FLAG_FILE}" # Clean up the temp file
-
-  # --- Perform stow if any existing target was found ---
-  if [ "${found_existing_target_persisted}" == "true" ]; then
-    echo "Stowing package: ${package_name}..."
-    stow -d "${DOTFILES}" -t "${TARGET_HOME}" --adopt --restow --no-folding --verbose=1 "${package_name}"
-    echo "Package '${package_name}' stowed successfully."
-  else
-    echo "Skipping package '${package_name}': No corresponding existing target found."
-  fi
-  echo "---"
-
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -n|--dry-run) dry_run=1 ;;
+    --adopt) adopt=1 ;;
+    -h|--help) sed -n '2,13p' "${BASH_SOURCE[0]}"; exit 0 ;;
+    -*) echo "Unknown option: $1" >&2; exit 2 ;;
+    *) packages+=("$1") ;;
+  esac
+  shift
 done
 
-echo "Stowing process complete."
+command -v stow >/dev/null 2>&1 || { echo "stow is not installed (brew install stow / sudo apt install stow)" >&2; exit 1; }
+
+if [ ${#packages[@]} -eq 0 ]; then
+  for d in "${DOTFILES}"/*/; do
+    name="$(basename "$d")"
+    skip=0
+    for ex in "${EXCLUDE[@]}"; do [ "$name" = "$ex" ] && skip=1; done
+    [ "$skip" -eq 0 ] && packages+=("$name")
+  done
+fi
+
+if [ "$adopt" -eq 1 ] && [ "$dry_run" -eq 0 ]; then
+  echo "--adopt will move existing files from \$HOME into the repo, overwriting repo copies."
+  read -r -p "Continue? [y/N] " answer
+  [[ "$answer" =~ ^[Yy]$ ]] || { echo "Aborted."; exit 1; }
+fi
+
+args=(-d "$DOTFILES" -t "$TARGET" --no-folding --restow -v)
+[ "$dry_run" -eq 1 ] && args+=(-n)
+[ "$adopt" -eq 1 ] && args+=(--adopt)
+
+failed=()
+for pkg in "${packages[@]}"; do
+  if [ ! -d "${DOTFILES}/${pkg}" ]; then
+    echo "!! ${pkg}: no such package" >&2
+    failed+=("$pkg")
+    continue
+  fi
+  echo "== ${pkg} =="
+  if ! stow "${args[@]}" "$pkg"; then
+    failed+=("$pkg")
+  fi
+done
+
+echo "---"
+if [ ${#failed[@]} -gt 0 ]; then
+  echo "Conflicts or errors in: ${failed[*]}" >&2
+  echo "Fix them (move the existing files away) and re-run, or use --adopt to pull them into the repo." >&2
+  exit 1
+fi
+[ "$dry_run" -eq 1 ] && echo "Dry run OK, nothing changed." || echo "All packages stowed."

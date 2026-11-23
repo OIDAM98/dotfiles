@@ -22,6 +22,24 @@ args = ["--dark-mode", "--enable-emoji"]
 [[language]]
 name = "sql"
 indent = { tab-width = 2, unit = "  " }
+language-servers = ["sqruff"]
+# Dialect comes from ~/.config/sqruff/.sqruff (snowflake) or a project .sqruff.
+# Wrapper makes sqruff safe for Helix (exit code and stderr); see sqruff-format.sh.
+formatter = { command = "sh", args = ["-c", "$HOME/.config/helix/sqruff-format.sh"] }
+auto-format = false # format on demand with `:format`
+
+[language-server.sqruff]
+command = "sqruff"
+args = ["lsp"]
+
+[[language]]
+name = "yaml"
+indent = { tab-width = 2, unit = "  " }
+language-servers = ["yaml-language-server"]
+
+[language-server.yaml-language-server.config.yaml]
+format = { enable = true }
+validate = true
 
 [[language]]
 name = "python"
@@ -41,5 +59,10 @@ formatter = { command = 'ruff', args = [
 
 [language-server.pylsp.config.pylsp.plugins]
 pylsp_mypy.enabled = true
-pylsp_mypy.live_mode = true
+pylsp_mypy.live_mode = false
 rope_autoimport.enabled = true
+pycodestyle.enabled = false
+pyflakes.enabled = false
+mccabe.enabled = false
+autopep8.enabled = false
+yapf.enabled = false
