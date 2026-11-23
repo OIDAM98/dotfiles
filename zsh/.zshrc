@@ -311,3 +311,9 @@ export FZF_ALT_C_COMMAND=""
 # This sources the fzf script and sets up all the key bindings and
 # completion functions in your Zsh shell.
 source <(fzf --zsh)
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/odealva/.docker/completions $fpath)
+autoload -Uz compinit
+(( ${+_comps[docker]} )) || compinit
+# End of Docker CLI completions
+alias scrcpy="scrcpy --no-audio"
